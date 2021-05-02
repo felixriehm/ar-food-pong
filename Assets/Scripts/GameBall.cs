@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class BounceBall : MonoBehaviour
+public class GameBall : MonoBehaviour
 {
     [SerializeField]
     private float speed = 10;
+    public UnityEvent OnPlayerGoalHit { get; set; }
+    public UnityEvent OnEnemyGoalHit { get; set; }
     private Vector3 _targetLocal;
     private Vector3 direction;
     private bool move = false;
@@ -43,6 +46,22 @@ public class BounceBall : MonoBehaviour
         
     }
 
+    public void Reset(Transform transform)
+    {
+        move = false;
+        this.transform.SetPositionAndRotation(transform.position, transform.rotation);
+    }
+
+    public void Pause()
+    {
+        move = false;
+    }
+    
+    public void Continue()
+    {
+        move = true;
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -53,7 +72,17 @@ public class BounceBall : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.name != "Emulator Ground Plane")
+        if (other.CompareTag("PlayerGoal"))
+        {
+            OnPlayerGoalHit.Invoke();;
+        }
+
+        if (other.CompareTag("EnemyGoal"))
+        {
+            OnEnemyGoalHit.Invoke();
+        }
+
+        if (other.CompareTag("Bounce"))
         {
             Debug.Log("Trigger");
             Debug.Log(other.name);
