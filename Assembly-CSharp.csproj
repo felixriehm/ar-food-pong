@@ -59,7 +59,7 @@
      <Compile Include="Assets\CoffeeShopStarterPack\Scripts\Utilities\SliceHelper.cs" />
      <Compile Include="Assets\Scripts\UIManager.cs" />
      <Compile Include="Assets\CoffeeShopStarterPack\Scripts\BewerageMaker.cs" />
-     <Compile Include="Assets\Scripts\RollingPin.cs" />
+     <Compile Include="Assets\Scripts\AIPlayer.cs" />
      <Compile Include="Assets\CoffeeShopStarterPack\Scripts\CookableProduct.cs" />
      <Compile Include="Assets\CoffeeShopStarterPack\Scripts\Microwave.cs" />
      <Compile Include="Assets\CoffeeShopStarterPack\Scripts\CreateProductOnPlaceHolder.cs" />

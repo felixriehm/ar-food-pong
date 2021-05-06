@@ -17,6 +17,14 @@ public class FoodPongManager : MonoBehaviour
     [SerializeField]
     private Transform gameBallSpawn;
     [SerializeField]
+    private GameObject enemyPrefab;
+    [SerializeField]
+    private Transform enemySpawn;
+    [SerializeField]
+    private GameObject throwableObstaclePrefab;
+    [SerializeField]
+    private Transform throwableObstacleSpawn;
+    [SerializeField]
     private UnityEvent OnPlayerHasLost;
     [SerializeField]
     private UnityEvent OnPlayerHasWon;
@@ -41,6 +49,9 @@ public class FoodPongManager : MonoBehaviour
     private int _enemyLife;
     private GameObject _gameBallObject;
     private GameBall _gameBall;
+    private GameObject _enemyObject;
+    private GameObject _throwableObstacleObject;
+    private AIPlayer _aiPlayer;
     private GameState _currentGameState = GameState.NotStarted;
     
     public void StartGame()
@@ -50,6 +61,10 @@ public class FoodPongManager : MonoBehaviour
         _currentGameState = GameState.Started;
         _gameBallObject = Instantiate(gameBallPrefab, gameBallSpawn);
         _gameBall = _gameBallObject.GetComponent<GameBall>();
+        _enemyObject = Instantiate(enemyPrefab, enemySpawn);
+        _aiPlayer = _enemyObject.GetComponent<AIPlayer>();
+        _throwableObstacleObject = Instantiate(throwableObstaclePrefab, throwableObstacleSpawn);
+        _throwableObstacleObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         
         if (_gameBall.OnPlayerGoalHit == null)
             _gameBall.OnPlayerGoalHit = new UnityEvent();
@@ -61,9 +76,21 @@ public class FoodPongManager : MonoBehaviour
         _gameBall.OnEnemyGoalHit.RemoveListener(RegisterEnemyGoalHit);
         _gameBall.OnPlayerGoalHit.AddListener(RegisterPlayerGoalHit);
         _gameBall.OnEnemyGoalHit.AddListener(RegisterEnemyGoalHit);
+        _aiPlayer.StartAI(_gameBall.transform);
         OnGameStarted.Invoke();
         OnUpdatePlayersLife.Invoke(3, 3);
         _gameBall.Invoke(nameof(_gameBall.initForce), 3);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown("n"))
+        {
+            _throwableObstacleObject.SetActive(false);
+            GameObject nn = Instantiate(throwableObstaclePrefab, throwableObstacleSpawn.position,
+                throwableObstacleSpawn.transform.rotation ,groundPlaneStage.transform);
+            nn.GetComponent<Rigidbody>().AddForce(new Vector3(0,0, 4), ForceMode.Impulse);
+        }
     }
 
     public void RegisterEnemyGoalHit()
@@ -73,11 +100,13 @@ public class FoodPongManager : MonoBehaviour
         {
             OnPlayerHasWon.Invoke(); 
             OnUpdatePlayersLife.Invoke(_enemyLife, _playerLife);
+            Destroy(_enemyObject);
             Destroy(_gameBallObject);
         }
         else
         {
             _gameBall.Reset(gameBallSpawn);
+            _aiPlayer.ResetPosition();
             OnUpdatePlayersLife.Invoke(_enemyLife, _playerLife);
             _gameBall.Invoke(nameof(_gameBall.initForce), 3);
         }
@@ -89,12 +118,14 @@ public class FoodPongManager : MonoBehaviour
         if (IsGameEnd())
         {
             OnPlayerHasLost.Invoke();
+            Destroy(_enemyObject);
             OnUpdatePlayersLife.Invoke(_enemyLife, _playerLife);
             Destroy(_gameBallObject);
         }
         else
         {
             _gameBall.Reset(gameBallSpawn);
+            _aiPlayer.ResetPosition();
             OnUpdatePlayersLife.Invoke(_enemyLife, _playerLife);
             _gameBall.Invoke(nameof(_gameBall.initForce), 3);
         }
@@ -114,6 +145,7 @@ public class FoodPongManager : MonoBehaviour
         {
             currentMeshRenderer.enabled = false;
         }
+        Destroy(_enemyObject);
         Destroy(_gameBallObject);
         OnGameExit.Invoke();
     }
@@ -127,12 +159,14 @@ public class FoodPongManager : MonoBehaviour
     public void Pause()
     {
         OnGamePaused.Invoke();
+        _aiPlayer.Pause();
         _gameBall.Pause();
     }
     
     public void Continue()
     {
         OnGameContinue.Invoke();
+        _aiPlayer.Continue();
         _gameBall.Continue();
     }
 
