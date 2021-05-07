@@ -18,6 +18,11 @@ public class UIManager : MonoBehaviour
     private UnityEvent OnContinueGameClick;
     [SerializeField]
     private UnityEvent OnPlaceGameClick;
+    [SerializeField]
+    private UnityEvent OnResetThrowableObstacleClick;
+    [SerializeField]
+    private UnityEvent OnThrowObstacleClick;
+
     
     private GameObject gameUI;
     private GameObject gameStats;
@@ -30,6 +35,8 @@ public class UIManager : MonoBehaviour
     private TextMeshProUGUI startGameButtonText;
     private Button pauseGameButton;
     private TextMeshProUGUI pauseGameButtonText;
+    private Button throwObstacleButton;
+    private TextMeshProUGUI throwObstacleButtonText;
     private GameObject playerWonObject;
     private TextMeshProUGUI playerWonText;
     void Start()
@@ -42,6 +49,8 @@ public class UIManager : MonoBehaviour
         startGameButtonText = GameObject.Find("/UI/Game/StartGameButton/StartGameButtonText").GetComponent<TextMeshProUGUI>();
         pauseGameButton = GameObject.Find("/UI/Game/PauseGameButton").GetComponent<Button>();
         pauseGameButtonText = GameObject.Find("/UI/Game/PauseGameButton/PauseGameButtonText").GetComponent<TextMeshProUGUI>();
+        throwObstacleButton = GameObject.Find("/UI/Game/ThrowObstacleButton").GetComponent<Button>();
+        throwObstacleButtonText = GameObject.Find("/UI/Game/ThrowObstacleButton/ThrowObstacleButtonText").GetComponent<TextMeshProUGUI>();
         playerWonObject = GameObject.Find("/UI/Game/PlayerWon");
         playerWonText = GameObject.Find("/UI/Game/PlayerWon").GetComponent<TextMeshProUGUI>();
         placeGameButtonObject = GameObject.Find("/UI/PlaceTheGameButton");
@@ -56,6 +65,10 @@ public class UIManager : MonoBehaviour
         placeGameButtonObject.SetActive(false);
         gameStats.SetActive(true);
         
+        throwObstacleButton.gameObject.SetActive(true);
+        throwObstacleButton.interactable = true;
+        throwObstacleButton.onClick.RemoveAllListeners();
+        throwObstacleButton.onClick.AddListener(() => OnThrowObstacleClick.Invoke());
         pauseGameButtonText.text = "Pause";
         pauseGameButton.interactable = true;
         pauseGameButton.onClick.RemoveAllListeners();
@@ -75,7 +88,9 @@ public class UIManager : MonoBehaviour
     {
         placeGameButtonObject.SetActive(false);
         gameStats.SetActive(true);
-        
+
+        throwObstacleButton.gameObject.SetActive(true);
+        throwObstacleButton.interactable = false;
         pauseGameButtonText.text = "Continue";
         pauseGameButton.interactable = true;
         pauseGameButton.onClick.RemoveAllListeners();
@@ -94,6 +109,8 @@ public class UIManager : MonoBehaviour
         placeGameButtonObject.SetActive(false);
         gameStats.SetActive(true);
         
+        throwObstacleButton.gameObject.SetActive(true);
+        throwObstacleButton.interactable = false;
         pauseGameButtonText.text = "Exit";
         pauseGameButton.interactable = true;
         pauseGameButton.onClick.RemoveAllListeners();
@@ -114,6 +131,8 @@ public class UIManager : MonoBehaviour
         placeGameButtonObject.SetActive(false);
         gameStats.SetActive(true);
         
+        throwObstacleButton.gameObject.SetActive(true);
+        throwObstacleButton.interactable = false;
         pauseGameButtonText.text = "Exit";
         pauseGameButton.interactable = true;
         pauseGameButton.onClick.RemoveAllListeners();
@@ -135,12 +154,28 @@ public class UIManager : MonoBehaviour
         enemyLifeValue.text = enemyLife.ToString();
         appInfo.text = "Players life changed.";
     }
+
+    public void ThrowObstacle()
+    {
+        throwObstacleButtonText.text = "Reset muffin";
+        throwObstacleButton.onClick.RemoveAllListeners();
+        throwObstacleButton.onClick.AddListener(() => OnResetThrowableObstacleClick.Invoke());
+    }
+    
+    public void ResetThrowObstacleButton()
+    {
+        throwObstacleButtonText.text = "Throw muffin";
+        throwObstacleButton.onClick.RemoveAllListeners();
+        throwObstacleButton.onClick.AddListener(() => OnThrowObstacleClick.Invoke());
+    }
     
     public void ShowGameNotStartedUI()
     {
         placeGameButtonObject.SetActive(false);
         gameStats.SetActive(false);
        
+        throwObstacleButton.gameObject.SetActive(false);
+        throwObstacleButton.interactable = true;
         pauseGameButtonText.text = "Pause";
         pauseGameButton.interactable = false;
         pauseGameButton.onClick.RemoveAllListeners();

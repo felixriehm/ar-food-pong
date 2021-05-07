@@ -41,6 +41,10 @@ public class FoodPongManager : MonoBehaviour
     [SerializeField]
     private UnityEvent<int, int> OnUpdatePlayersLife;
     [SerializeField]
+    private UnityEvent OnThrowObstacle;
+    [SerializeField]
+    private UnityEvent OnResetThrowableObstacle;
+    [SerializeField]
     private PlaneFinderBehaviour planeFinderBehaviour;
     [SerializeField]
     private GameObject groundPlaneStage;
@@ -53,6 +57,7 @@ public class FoodPongManager : MonoBehaviour
     private GameObject _throwableObstacleObject;
     private AIPlayer _aiPlayer;
     private GameState _currentGameState = GameState.NotStarted;
+    private GameObject _tmpThrowableObstacleObject;
     
     public void StartGame()
     {
@@ -72,25 +77,20 @@ public class FoodPongManager : MonoBehaviour
         if (_gameBall.OnEnemyGoalHit == null)
             _gameBall.OnEnemyGoalHit = new UnityEvent();
         
+        if (_gameBall.OnThrowableObstacleHit == null)
+            _gameBall.OnThrowableObstacleHit = new UnityEvent();
+        
         _gameBall.OnPlayerGoalHit.RemoveListener(RegisterPlayerGoalHit);
         _gameBall.OnEnemyGoalHit.RemoveListener(RegisterEnemyGoalHit);
+        _gameBall.OnThrowableObstacleHit.RemoveListener(ResetThrowableObstacle);
         _gameBall.OnPlayerGoalHit.AddListener(RegisterPlayerGoalHit);
         _gameBall.OnEnemyGoalHit.AddListener(RegisterEnemyGoalHit);
+        _gameBall.OnThrowableObstacleHit.AddListener(ResetThrowableObstacle);
+        ResetThrowableObstacle();
         _aiPlayer.StartAI(_gameBall.transform);
         OnGameStarted.Invoke();
         OnUpdatePlayersLife.Invoke(3, 3);
         _gameBall.Invoke(nameof(_gameBall.initForce), 3);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown("n"))
-        {
-            _throwableObstacleObject.SetActive(false);
-            GameObject nn = Instantiate(throwableObstaclePrefab, throwableObstacleSpawn.position,
-                throwableObstacleSpawn.transform.rotation ,groundPlaneStage.transform);
-            nn.GetComponent<Rigidbody>().AddForce(new Vector3(0,0, 4), ForceMode.Impulse);
-        }
     }
 
     public void RegisterEnemyGoalHit()
@@ -147,6 +147,11 @@ public class FoodPongManager : MonoBehaviour
         }
         Destroy(_enemyObject);
         Destroy(_gameBallObject);
+        Destroy(_throwableObstacleObject);
+        if (_tmpThrowableObstacleObject != null)
+        {
+            Destroy(_tmpThrowableObstacleObject);
+        }
         OnGameExit.Invoke();
     }
 
@@ -154,6 +159,28 @@ public class FoodPongManager : MonoBehaviour
     {
         planeFinderBehaviour.PerformHitTest(new Vector2(0,0));
         OnGamePlaced.Invoke();
+    }
+
+    public void ResetThrowableObstacle()
+    {
+        _throwableObstacleObject.SetActive(true);
+        if (_tmpThrowableObstacleObject != null)
+        {
+            Destroy(_tmpThrowableObstacleObject);
+        }
+        OnResetThrowableObstacle.Invoke();
+    }
+    
+    public void ThrowObstacle()
+    {
+        _throwableObstacleObject.SetActive(false);
+        if (_tmpThrowableObstacleObject == null)
+        {
+            _tmpThrowableObstacleObject = Instantiate(throwableObstaclePrefab, throwableObstacleSpawn.position,
+                throwableObstacleSpawn.transform.rotation ,groundPlaneStage.transform);
+        }
+        _tmpThrowableObstacleObject.GetComponent<Rigidbody>().AddForce(new Vector3(0,0, 4), ForceMode.Impulse);
+        OnThrowObstacle.Invoke();
     }
     
     public void Pause()

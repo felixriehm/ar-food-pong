@@ -8,6 +8,7 @@ TagManager:
   - Bounce
   - EnemyGoal
   - PlayerGoal
+  - ThrowableObstacle
   layers:
   - Default
   - TransparentFX

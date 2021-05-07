@@ -10,10 +10,17 @@ public class GameBall : MonoBehaviour
     private float speed = 10;
     public UnityEvent OnPlayerGoalHit { get; set; }
     public UnityEvent OnEnemyGoalHit { get; set; }
+    public UnityEvent OnThrowableObstacleHit { get; set; }
     private Vector3 _targetLocal;
     private Vector3 direction;
     private bool move = false;
     private float _step;
+    private int _bounceLayerMask;
+
+    private void Start()
+    {
+        _bounceLayerMask = LayerMask.GetMask("Bounce");
+    }
 
     public void initForce()
     {
@@ -87,23 +94,34 @@ public class GameBall : MonoBehaviour
             Debug.Log("Trigger");
             Debug.Log(other.name);
             RaycastHit hit;
-            int layer_mask = LayerMask.GetMask("Bounce");
             Ray ray = new Ray(transform.position, direction);
-            if (Physics.Raycast(ray, out hit,10f, layer_mask ,QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(ray, out hit,10f, _bounceLayerMask ,QueryTriggerInteraction.Ignore))
             {
                 direction = Vector3.Reflect(direction, hit.normal);
                 direction = new Vector3(direction.x, 0f, direction.z);
-
-                ray = new Ray(transform.position, direction);
-                if (Physics.Raycast(ray, out hit,10f, layer_mask ,QueryTriggerInteraction.Ignore))
-                {
-                    Debug.Log("next: " + hit.collider.name);
-                    
-                    _targetLocal = transform.InverseTransformPoint(hit.point);
-                    //_target = new Vector3(hit.point.x, 0 , hit.point.z);
-                    //_target = (transform.position + direction) * 10f;
-                }
+                CalculateNextTarget();
             }
+        }
+        
+        if (other.CompareTag("ThrowableObstacle"))
+        {
+            direction = new Vector3(-1 * direction.x, -1 * direction.y, -1 * direction.z);
+            CalculateNextTarget();
+            OnThrowableObstacleHit.Invoke();
+        }
+    }
+
+    private void CalculateNextTarget()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(transform.position, direction);
+        if (Physics.Raycast(ray, out hit,10f, _bounceLayerMask ,QueryTriggerInteraction.Ignore))
+        {
+            Debug.Log("next: " + hit.collider.name);
+                    
+            _targetLocal = transform.InverseTransformPoint(hit.point);
+            //_target = new Vector3(hit.point.x, 0 , hit.point.z);
+            //_target = (transform.position + direction) * 10f;
         }
     }
 }
