@@ -13,6 +13,8 @@ using Vuforia;
 public class FoodPongManager : MonoBehaviour
 {
     [SerializeField]
+    private float throwStrength = 4;
+    [SerializeField]
     private GameObject gameBallPrefab;
     [SerializeField]
     private Transform gameBallSpawn;
@@ -179,7 +181,7 @@ public class FoodPongManager : MonoBehaviour
             _tmpThrowableObstacleObject = Instantiate(throwableObstaclePrefab, throwableObstacleSpawn.position,
                 throwableObstacleSpawn.transform.rotation ,groundPlaneStage.transform);
         }
-        _tmpThrowableObstacleObject.GetComponent<Rigidbody>().AddForce(new Vector3(0,0, 4), ForceMode.Impulse);
+        _tmpThrowableObstacleObject.GetComponent<Rigidbody>().AddForce(_tmpThrowableObstacleObject.transform.forward * throwStrength, ForceMode.Impulse);
         OnThrowObstacle.Invoke();
     }
     
