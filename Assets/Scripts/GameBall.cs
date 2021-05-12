@@ -18,6 +18,7 @@ public class GameBall : MonoBehaviour
     private bool _move = false;
     private float _step;
     private int _bounceLayerMask;
+    private Transform _rescuePoint;
 
     private void Start()
     {
@@ -35,8 +36,6 @@ public class GameBall : MonoBehaviour
         Ray ray = new Ray(transform.position, _direction);
         if (Physics.Raycast(ray, out hit,10f, _bounceLayerMask, QueryTriggerInteraction.Ignore))
         {
-            Debug.Log("hit");
-            Debug.Log(hit.collider.name);
             _targetLocal = transform.parent.InverseTransformPoint(hit.point);
             _lastTargetLocal = transform.parent.InverseTransformPoint(transform.position);
         }
@@ -49,10 +48,20 @@ public class GameBall : MonoBehaviour
     {
         if (_move)
         {
+            if (transform.position == transform.parent.TransformPoint(_targetLocal))
+            {
+                _targetLocal = transform.parent.InverseTransformPoint(_rescuePoint.position);
+            }
+
             _step = speed * Time.deltaTime; 
             transform.position = Vector3.MoveTowards(transform.position, transform.parent.TransformPoint(_targetLocal), _step);
         }
         
+    }
+
+    public void SetRescuePoint(Transform rescuePoint)
+    {
+        _rescuePoint = rescuePoint;
     }
 
     public void Reset(Transform transform)
@@ -95,8 +104,8 @@ public class GameBall : MonoBehaviour
 
         if (other.CompareTag("Bounce"))
         {
-            Debug.Log("Trigger");
-            Debug.Log(other.name);
+            //Debug.Log("Trigger");
+            //Debug.Log(other.name);
             RaycastHit hit;
             Ray ray = new Ray(transform.parent.TransformPoint(_lastTargetLocal), _direction);
             if (Physics.Raycast(ray, out hit,10f, _bounceLayerMask ,QueryTriggerInteraction.Ignore))
@@ -121,14 +130,9 @@ public class GameBall : MonoBehaviour
         Ray ray = new Ray(transform.position, _direction);
         if (Physics.Raycast(ray, out hit,10f, _bounceLayerMask ,QueryTriggerInteraction.Ignore))
         {
-            Debug.Log("next: " + hit.collider.name);
-
+            //Debug.Log("next: " + hit.collider.name);
             _lastTargetLocal = transform.parent.InverseTransformPoint(transform.position);
             _targetLocal = transform.parent.InverseTransformPoint(hit.point);
-            Debug.Log("_lastTargetLocal: " + _lastTargetLocal);
-            Debug.Log("_targetLocal: " + _targetLocal);
-            //_target = new Vector3(hit.point.x, 0 , hit.point.z);
-            //_target = (transform.position + direction) * 10f;
         }
     }
 }

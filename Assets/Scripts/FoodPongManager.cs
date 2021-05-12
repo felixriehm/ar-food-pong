@@ -15,6 +15,8 @@ public class FoodPongManager : MonoBehaviour
     [SerializeField]
     private float throwStrength = 4;
     [SerializeField]
+    private int countdownTime = 3;
+    [SerializeField]
     private GameObject gameBallPrefab;
     [SerializeField]
     private Transform gameBallSpawn;
@@ -22,6 +24,8 @@ public class FoodPongManager : MonoBehaviour
     private GameObject enemyPrefab;
     [SerializeField]
     private Transform enemySpawn;
+    [SerializeField]
+    private Transform rescuePoint;
     [SerializeField]
     private GameObject throwableObstaclePrefab;
     [SerializeField]
@@ -43,6 +47,8 @@ public class FoodPongManager : MonoBehaviour
     [SerializeField]
     private UnityEvent<int, int> OnUpdatePlayersLife;
     [SerializeField]
+    private UnityEvent<int> OnUpdateCountdown;
+    [SerializeField]
     private UnityEvent OnThrowObstacle;
     [SerializeField]
     private UnityEvent OnResetThrowableObstacle;
@@ -60,6 +66,21 @@ public class FoodPongManager : MonoBehaviour
     private AIPlayer _aiPlayer;
     private GameState _currentGameState = GameState.NotStarted;
     private GameObject _tmpThrowableObstacleObject;
+
+    IEnumerator CountdownToStart()
+    {
+        int countdownTimer = countdownTime;
+        
+        while (countdownTimer > 0 )
+        {
+            OnUpdateCountdown.Invoke(countdownTimer);
+            yield return new WaitForSeconds(1f);
+            countdownTimer--;
+        }
+
+        OnUpdateCountdown.Invoke(0);
+        _gameBall.initForce();
+    }
     
     public void StartGame()
     {
@@ -88,11 +109,12 @@ public class FoodPongManager : MonoBehaviour
         _gameBall.OnPlayerGoalHit.AddListener(RegisterPlayerGoalHit);
         _gameBall.OnEnemyGoalHit.AddListener(RegisterEnemyGoalHit);
         _gameBall.OnThrowableObstacleHit.AddListener(ResetThrowableObstacle);
+        _gameBall.SetRescuePoint(rescuePoint);
         ResetThrowableObstacle();
         _aiPlayer.StartAI(_gameBall.transform);
         OnGameStarted.Invoke();
         OnUpdatePlayersLife.Invoke(3, 3);
-        _gameBall.Invoke(nameof(_gameBall.initForce), 3);
+        StartCoroutine(CountdownToStart());
     }
 
     public void RegisterEnemyGoalHit()
@@ -110,7 +132,7 @@ public class FoodPongManager : MonoBehaviour
             _gameBall.Reset(gameBallSpawn);
             _aiPlayer.ResetPosition();
             OnUpdatePlayersLife.Invoke(_enemyLife, _playerLife);
-            _gameBall.Invoke(nameof(_gameBall.initForce), 3);
+            StartCoroutine(CountdownToStart());
         }
     }
 
@@ -129,7 +151,7 @@ public class FoodPongManager : MonoBehaviour
             _gameBall.Reset(gameBallSpawn);
             _aiPlayer.ResetPosition();
             OnUpdatePlayersLife.Invoke(_enemyLife, _playerLife);
-            _gameBall.Invoke(nameof(_gameBall.initForce), 3);
+            StartCoroutine(CountdownToStart());
         }
     }
 

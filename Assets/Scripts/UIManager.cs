@@ -155,6 +155,20 @@ public class UIManager : MonoBehaviour
         appInfo.text = "Players life changed.";
     }
 
+    public void UpdateCountdown(int countdown)
+    {
+        playerWonText.color = Color.white;
+        playerWonText.text = countdown.ToString();
+        if (countdown == 0)
+        {
+            playerWonObject.SetActive(false);
+        }
+        else
+        {
+            playerWonObject.SetActive(true);
+        }
+    }
+
     public void ThrowObstacle()
     {
         throwObstacleButtonText.text = "Reset muffin";
