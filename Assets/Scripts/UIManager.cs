@@ -6,24 +6,51 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class is responsible for managing the UI for the FoodPong game.
+/// </summary>
+/// <remarks>
+/// Author: Felix Riehm
+/// </remarks>
 public class UIManager : MonoBehaviour
 {
+    /// <summary>
+    /// Event fires when the "Pause" (game) button is pressed.
+    /// </summary>
     [SerializeField]
     private UnityEvent OnPauseGameClick;
+    /// <summary>
+    /// Event fires when the "Start" (game) button is pressed.
+    /// </summary>
     [SerializeField]
     private UnityEvent OnStartGameClick;
+    /// <summary>
+    /// Event fires when the "Exit" (game) button is pressed.
+    /// </summary>
     [SerializeField]
     private UnityEvent OnExitGameClick;
+    /// <summary>
+    /// Event fires when the "Continue" (game) button is pressed.
+    /// </summary>
     [SerializeField]
     private UnityEvent OnContinueGameClick;
+    /// <summary>
+    /// Event fires when the "Place game" (game) button is pressed.
+    /// </summary>
     [SerializeField]
     private UnityEvent OnPlaceGameClick;
+    /// <summary>
+    /// Event fires when the "Reset" (throwable obstacle) button is pressed.
+    /// </summary>
     [SerializeField]
     private UnityEvent OnResetThrowableObstacleClick;
+    /// <summary>
+    /// Event fires when the "Throw" (throwable obstacle) button is pressed.
+    /// </summary>
     [SerializeField]
     private UnityEvent OnThrowObstacleClick;
 
-    
+    /// UI elements
     private GameObject gameUI;
     private GameObject gameStats;
     private GameObject placeGameButtonObject;
@@ -39,6 +66,7 @@ public class UIManager : MonoBehaviour
     private TextMeshProUGUI throwObstacleButtonText;
     private GameObject playerWonObject;
     private TextMeshProUGUI playerWonText;
+    
     void Start()
     {
         gameUI = GameObject.Find("/UI/Game");
@@ -60,6 +88,8 @@ public class UIManager : MonoBehaviour
         ShowPlaceGameUI();
     }
 
+    /// <summary>Show the UI in the state when the game is started.</summary>
+    /// <returns>Void.</returns>
     public void ShowGameStartedUI()
     {
         placeGameButtonObject.SetActive(false);
@@ -83,7 +113,8 @@ public class UIManager : MonoBehaviour
     }
     
     
-    
+    /// <summary>Show the UI in the state when the game is paused.</summary>
+    /// <returns>Void.</returns>
     public void ShowGamePausedUI()
     {
         placeGameButtonObject.SetActive(false);
@@ -104,6 +135,8 @@ public class UIManager : MonoBehaviour
         gameUI.SetActive(true);
     }
     
+    /// <summary>Show the UI in the state when the player has lost.</summary>
+    /// <returns>Void.</returns>
     public void ShowPlayerHasLostUI()
     {
         placeGameButtonObject.SetActive(false);
@@ -126,6 +159,8 @@ public class UIManager : MonoBehaviour
         gameUI.SetActive(true);
     }
     
+    /// <summary>Show the UI in the state when the player has won.</summary>
+    /// <returns>Void.</returns>
     public void ShowPlayerHasWonUI()
     {
         placeGameButtonObject.SetActive(false);
@@ -148,6 +183,10 @@ public class UIManager : MonoBehaviour
         gameUI.SetActive(true);
     }
 
+    /// <summary>Updates life of player and enemy in the UI.</summary>
+    /// <param name="enemyLife">Enemy life.</param>
+    /// <param name="playerLife">Player life.</param>
+    /// <returns>Void.</returns>
     public void UpdatePlayersLife(int enemyLife, int playerLife)
     {
         playerLifeValue.text = playerLife.ToString();
@@ -155,6 +194,9 @@ public class UIManager : MonoBehaviour
         appInfo.text = "Players life changed.";
     }
 
+    /// <summary>Updates the countdown in the UI.</summary>
+    /// <param name="countdown">Time left in seconds.</param>
+    /// <returns>Void.</returns>
     public void UpdateCountdown(int countdown)
     {
         playerWonText.color = Color.white;
@@ -168,7 +210,9 @@ public class UIManager : MonoBehaviour
             playerWonObject.SetActive(true);
         }
     }
-
+    
+    /// <summary>When the throwable object is thrown this function will update the UI.</summary>
+    /// <returns>Void.</returns>
     public void ThrowObstacle()
     {
         throwObstacleButtonText.text = "Reset muffin";
@@ -176,6 +220,8 @@ public class UIManager : MonoBehaviour
         throwObstacleButton.onClick.AddListener(() => OnResetThrowableObstacleClick.Invoke());
     }
     
+    /// <summary>When the throwable object is reset this function will reset the UI.</summary>
+    /// <returns>Void.</returns>
     public void ResetThrowObstacleButton()
     {
         throwObstacleButtonText.text = "Throw muffin";
@@ -183,6 +229,8 @@ public class UIManager : MonoBehaviour
         throwObstacleButton.onClick.AddListener(() => OnThrowObstacleClick.Invoke());
     }
     
+    /// <summary>Show the UI in the state when the game is placed but not started.</summary>
+    /// <returns>Void.</returns>
     public void ShowGameNotStartedUI()
     {
         placeGameButtonObject.SetActive(false);
@@ -203,11 +251,15 @@ public class UIManager : MonoBehaviour
         gameUI.SetActive(true);
     }
 
+    /// <summary>Changes the app information displayed in the left upper corner.</summary>
+    /// <returns>Void.</returns>
     public void ChangeApplicationInformation(string message)
     {
         appInfo.text = message;
     }
 
+    /// <summary>Show the UI in the state when the game is placed.</summary>
+    /// <returns>Void.</returns>
     public void ShowPlaceGameUI()
     {
         placeGameButtonObject.SetActive(true);
