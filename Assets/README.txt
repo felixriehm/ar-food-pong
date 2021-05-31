@@ -7,8 +7,8 @@ Das Projekt wurde mit Vuforia 9.8.5 und einer Webcam entwickelt. Das Image Targe
 
 Skripte
 -------
-* AIPlayer.cs 		- veranwortlich für das Kontrollieren des AI Spielers
-* FoodPongManger.cs	- veranwortlich für das Verwalten des Food Pong Spiels
+* AIPlayer.cs 		- verantwortlich für das Kontrollieren des AI Spielers
+* FoodPongManger.cs	- verantwortlich für das Verwalten des Food Pong Spiels
 * GameBall.cs		- kontrolliert den Spielball
 * GameState.cs		- enthält ein Enum, welches den Spielzustand repräsentiert
 * UIManager.cs		- verwaltet die UI für das Food Pong Spiel
